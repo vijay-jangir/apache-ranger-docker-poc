@@ -6,11 +6,9 @@
 ```bash
 docker network create ranger-env
 
-cd docker-composes/ranger
+cd docker-composes/
 docker-compose up -d --build
 
-cd ../hadoop
-docker-compose up -d --build
 ```
 
 ## What happens?
