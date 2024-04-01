@@ -2,7 +2,7 @@ version: "3"
 
 services:
   namenode:
-    image: kadensungbincho/ranger-hadoop-namenode:2.0.0-hadoop3.2.1-java8-ranger2.1.0
+    image: ranger-hadoop-namenode:2.0.0-hadoop3.2.1-java8-ranger2.4.0
     container_name: namenode
     hostname: namenode
     restart: always
@@ -97,16 +97,18 @@ services:
       MYSQL_USER: hive
       MYSQL_PASSWORD: hive
   presto:
-    image: kadensungbincho/ranger-presto:presto344-ranger2.1.0
+    image: ranger-presto:trino437-ranger2.4.0
     container_name: presto
     hostname: presto
     volumes:
-      - ./presto/etc/catalog:/usr/lib/presto/etc/catalog
-      - ./presto/etc/config.properties:/usr/lib/presto/etc/config.properties
-      - ./presto/etc/jvm.config:/usr/lib/presto/etc/jvm.config
-      - ./presto/etc/log.properties:/usr/lib/presto/etc/log.properties
-      - ./presto/etc/node.properties:/usr/lib/presto/etc/node.properties
-      - ./presto/install.properties:/usr/lib/presto/ranger-presto-plugin/install.properties
+      - ./presto/etc/catalog:/usr/lib/trino/etc/catalog
+      - ./presto/etc/config.properties:/usr/lib/trino/etc/config.properties
+      - ./presto/etc/jvm.config:/usr/lib/trino/etc/jvm.config
+      - ./presto/etc/log.properties:/usr/lib/trino/etc/log.properties
+      - ./presto/etc/node.properties:/usr/lib/trino/etc/node.properties
+      - ./presto/install.properties:/usr/lib/trino/ranger-trino-plugin/install.properties
+      # 
+      # - ./presto/etc:/etc/trino
     environment:
       SERVICE_PRECONDITION: "hive-metastore:9083"
     ports:

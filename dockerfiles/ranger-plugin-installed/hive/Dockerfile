@@ -6,7 +6,7 @@ ENV HIVE_VERSION=${HIVE_VERSION:-3.1.2}
 ARG MYSQL_CONNECTOR_JAVA_VERSION
 ENV MYSQL_CONNECTOR_JAVA_VERSION=${MYSQL_CONNECTOR_JAVA_VERSION:-8.0.21}
 ARG RANGER_VERSION
-ENV RANGER_VERSION=${RANGER_VERSION:-2.1.0}
+ENV RANGER_VERSION=${RANGER_VERSION:-2.4.0}
 
 ENV HIVE_HOME /opt/hive
 ENV PATH $HIVE_HOME/bin:$PATH
@@ -15,7 +15,8 @@ ENV HADOOP_HOME /opt/hadoop-$HADOOP_VERSION
 WORKDIR /opt
 
 #Install Hive and PostgreSQL JDBCf
-RUN apt-get update -o Acquire::CompressionTypes::Order::=gz && apt-get install -y wget procps && \
+RUN echo "deb http://archive.debian.org/debian stretch main" > /etc/apt/sources.list
+RUN apt-get update && apt-get install -y wget procps && \
 	wget https://archive.apache.org/dist/hive/hive-$HIVE_VERSION/apache-hive-$HIVE_VERSION-bin.tar.gz && \
 	tar -xzvf apache-hive-$HIVE_VERSION-bin.tar.gz && \
 	mv apache-hive-$HIVE_VERSION-bin hive && \

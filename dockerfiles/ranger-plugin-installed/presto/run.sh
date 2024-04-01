@@ -1,3 +1,3 @@
 #!/bin/bash
 
-/usr/lib/presto/ranger-presto-plugin/enable-presto-plugin.sh && /usr/lib/presto/bin/run-presto
+/usr/lib/trino/ranger-trino-plugin/enable-trino-plugin.sh && exec /usr/lib/trino/bin/launcher run "$@"
