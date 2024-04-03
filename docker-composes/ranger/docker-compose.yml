@@ -1,0 +1,102 @@
+version: '3.7'
+
+services:
+
+  postgres-db:
+    image: postgres:9.6
+    volumes:
+      - psql_data:/var/lib/psql/data
+    restart: always
+    # command: --default-authentication-plugin=mysql_native_password
+    container_name: ranger-psqldb
+    environment:
+      POSTGRES_USER: ranger
+      POSTGRES_PASSWORD: ranger
+      POSTGRES_DB: ranger
+      PGDATA: /var/lib/psql/data/pgdata
+      MYSQL_DATABASE: ranger
+      MYSQL_USER: ranger
+      MYSQL_PASSWORD: ranger
+    expose:
+      - "5432"
+    ports:
+      - "5432:5432"
+  ranger-admin:
+    image: vijayjangir/ranger-admin:2.4.0
+    container_name: ranger-admin
+    hostname: ranger
+    depends_on:
+      - postgres-db
+    volumes:
+      - ./admin/bootstrap.sh:/opt/ranger_admin/bootstrap.sh
+      - ./admin/install.properties:/opt/ranger_admin/install.properties
+    command: ["./bootstrap.sh"]
+    ports:
+      - "6080:6080"
+      - "5001:5005"
+    restart: always
+  # ranger-usersync:
+  #   image: vijayjangir/ranger-usersync:2.4.0
+  #   container_name: ranger-usersync
+  #   hostname: usersync
+  #   depends_on:
+  #     - ranger-admin
+  #   volumes:
+  #     - ./usersync/bootstrap.sh:/opt/ranger_usersync/bootstrap.sh
+  #     - ./usersync/install.properties:/opt/ranger_usersync/install.properties
+  #   command: ["./bootstrap.sh"]
+  #   restart: always
+  #  ranger-usersync-ldap:
+  #    image: kadensungbincho/ranger-usersync:2.1.0
+  #    container_name: ranger2.0.0-usersync-ldap
+  #    hostname: usersync-ldap
+  #    depends_on:
+  #      - ranger-admin
+  #    volumes:
+  #      - ./usersync/bootstrap-ldap.sh:/opt/ranger_usersync/bootstrap.sh
+  #      - ./usersync/install-ldap.properties:/opt/ranger_usersync/install-hdfs.properties
+  #      - ./usersync/templates:/templates
+  #      - ./usersync/conf.dist/log4j.properties:/opt/ranger_usersync/conf.dist/log4j.properties
+  #    command: ["./bootstrap.sh"]
+
+  ranger-tagsync:
+    image: vijayjangir/ranger-tagsync:2.4.0
+    container_name: ranger-tagsync
+    hostname: tagsync
+    ports:
+      - "5005:5005"
+    depends_on:
+      - ranger-admin
+    volumes:
+      - ./tagsync/bootstrap.sh:/opt/ranger_tagsync/bootstrap.sh
+      - ./tagsync/install.properties:/opt/ranger_tagsync/install.properties
+      - ./tagsync/logback.xml:/opt/ranger_tagsync/conf.dist/logback.xml
+    command: ["./bootstrap.sh"]
+    restart: always
+
+  trino:
+    image: vijayjangir/trino437:ranger2.4.0
+    container_name: trino
+    restart: always
+    hostname: trino
+    volumes:
+      - ./trino/etc/catalog:/usr/lib/trino/etc/catalog
+      - ./trino/etc/config.properties:/usr/lib/trino/etc/config.properties
+      - ./trino/etc/jvm.config:/usr/lib/trino/etc/jvm.config
+      - ./trino/etc/log.properties:/usr/lib/trino/etc/log.properties
+      - ./trino/etc/node.properties:/usr/lib/trino/etc/node.properties
+      - ./trino/install.properties:/usr/lib/trino/ranger-trino-plugin/install.properties
+    environment:
+      SERVICE_PRECONDITION: "postgres-db:5432"
+    ports:
+      - "8080:8080"
+
+
+volumes:
+  psql_data:
+    driver: local
+
+networks:
+  default:
+    external:
+      name: ranger-env

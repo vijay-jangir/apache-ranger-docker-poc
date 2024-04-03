@@ -1,6 +1,6 @@
 FROM centos:centos7 as base
 
-RUN yum update -y \
+RUN --mount=type=cache,target=/var/cache/yum yum update -y \
     && yum -y install vim wget tar gcc java-1.8.0-openjdk-devel python3-3.6.8 \
     && yum clean all -y
 
