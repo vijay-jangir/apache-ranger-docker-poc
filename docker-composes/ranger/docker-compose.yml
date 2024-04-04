@@ -21,12 +21,23 @@ services:
       - "5432"
     ports:
       - "5432:5432"
+
+  image_build_step:
+    build: 
+      context: /Users/b0228188/projects/darts2/apache-ranger/target/ # path to the ranger tar files
+      dockerfile: /Users/b0228188/projects/github_repos/apache-ranger-docker-poc/dockerfiles/ranger/base/Dockerfile # path to dockerfile
+      args:
+        RANGER_VERSION: 2.4.0
+    image: vijayjangir/ranger-base:2.4.0
+
   ranger-admin:
+    build: ../../dockerfiles/ranger/admin
     image: vijayjangir/ranger-admin:2.4.0
     container_name: ranger-admin
     hostname: ranger
     depends_on:
       - postgres-db
+      - image_build_step
     volumes:
       - ./admin/bootstrap.sh:/opt/ranger_admin/bootstrap.sh
       - ./admin/install.properties:/opt/ranger_admin/install.properties
@@ -36,6 +47,7 @@ services:
       - "5001:5005"
     restart: always
   # ranger-usersync:
+  #   build: ../../dockerfiles/ranger/usersync
   #   image: vijayjangir/ranger-usersync:2.4.0
   #   container_name: ranger-usersync
   #   hostname: usersync
@@ -60,6 +72,7 @@ services:
   #    command: ["./bootstrap.sh"]
 
   ranger-tagsync:
+    build: ../../dockerfiles/ranger/tagsync
     image: vijayjangir/ranger-tagsync:2.4.0
     container_name: ranger-tagsync
     hostname: tagsync
@@ -74,29 +87,10 @@ services:
     command: ["./bootstrap.sh"]
     restart: always
 
-  trino:
-    image: vijayjangir/trino437:ranger2.4.0
-    container_name: trino
-    restart: always
-    hostname: trino
-    volumes:
-      - ./trino/etc/catalog:/usr/lib/trino/etc/catalog
-      - ./trino/etc/config.properties:/usr/lib/trino/etc/config.properties
-      - ./trino/etc/jvm.config:/usr/lib/trino/etc/jvm.config
-      - ./trino/etc/log.properties:/usr/lib/trino/etc/log.properties
-      - ./trino/etc/node.properties:/usr/lib/trino/etc/node.properties
-      - ./trino/install.properties:/usr/lib/trino/ranger-trino-plugin/install.properties
-    environment:
-      SERVICE_PRECONDITION: "postgres-db:5432"
-    ports:
-      - "8080:8080"
-
-
 volumes:
   psql_data:
     driver: local
 
 networks:
   default:
-    external:
-      name: ranger-env
+    name: ranger-env

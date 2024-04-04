@@ -14,28 +14,22 @@ RUN groupadd hadoop && \
 
 USER atlas
 
-COPY ./apache-atlas-*-bin.tar.gz /apache-atlas.tar.gz
+COPY ./atlas_bin_archive /atlas_bin_archive
+
 RUN cd /opt \
-	&& tar xzf /apache-atlas.tar.gz -C /opt/atlas --strip-components=1
+	&& cat /atlas_bin_archive/* | tar -xz -C /opt/atlas --strip-components=1 
 
-COPY ./ranger-2.4.0-atlas-plugin.tar.gz /ranger-atlas-plugin.tar.gz
-RUN cd /opt/atlas \
-	&& tar xzf /ranger-atlas-plugin.tar.gz   \
-	&& ln -s /opt/atlas/ranger-2.4.0-atlas-plugin /opt/atlas/ranger-atlas-plugin
-
-COPY model /tmp/model
-COPY resources/atlas-setup.sh /tmp
-COPY resources/credentials /tmp
-COPY resources/init_amundsen.py /tmp
-
-COPY resources/atlas-application.properties /opt/atlas/conf/
+# COPY ./ranger-2.4.0-atlas-plugin.tar.gz /ranger-atlas-plugin.tar.gz
+# RUN cd /opt/atlas \
+# 	&& tar xzf /ranger-atlas-plugin.tar.gz   \
+# 	&& ln -s /opt/atlas/ranger-2.4.0-atlas-plugin /opt/atlas/ranger-atlas-plugin
 
 USER root
 ADD resources/entrypoint.sh /entrypoint.sh
-RUN rm -rf /apache-atlas.tar.gz
+RUN rm -rf /atlas_bin_archive && rm -rf /ranger-atlas-plugin.tar.gz
+
+RUN rm -rf /opt/atlas/models/{2..4}000*
 ENV JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk
-COPY ./resources/ranger/install.properties /opt/atlas/ranger-atlas-plugin/install.properties
-RUN /opt/atlas/ranger-atlas-plugin/enable-atlas-plugin.sh
 
 USER atlas
 

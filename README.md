@@ -1,6 +1,4 @@
-# Apache Ranger Docker POC (Proof of Concept)
-- Apache Ranger Docker Cluster for POC with Hadoop Environment(HDFS, Hive, Presto)
-- [Details](https://kadencho.medium.com/hands-on-apache-ranger-docker-poc-with-hadoop-hdfs-hive-presto-814344a03a17) on my Medium article
+# Ranger and Atlas setup with Trino/Hive services
 
 # How to start
 ```bash

@@ -1,4 +1,4 @@
-FROM ranger-base:2.4.0
+FROM vijayjangir/ranger-base:2.4.0
 
 ENV RANGER_ADMIN_HOME /opt/ranger_admin
 

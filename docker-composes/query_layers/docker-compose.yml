@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+  hive-server:
+    build: ../../dockerfiles/plugin-installed-services/hive
+    image: vijayjangir/hive:3.1.3-ranger-atlas
+    container_name: hive-server
+    # restart: always
+    hostname: hive-server
+    environment:
+      SERVICE_NAME: hiveserver2
+      HADOOP_CLASSPATH: /opt/tez/*:/opt/tez/lib/*
+    volumes:
+      - ./hive/install.properties:/opt/ranger-hive-plugin/install.properties
+      - warehouse:/opt/hive/data/warehouse
+    ports:
+      - "10000:10000"
+    env_file:
+      - ./hive/hive.env
+
+  trino:
+    build: ../../dockerfiles/plugin-installed-services/trino
+    image: vijayjangir/trino437:ranger2.4.0
+    container_name: trino
+    restart: always
+    hostname: trino
+    volumes:
+      - ./trino/etc/catalog:/usr/lib/trino/etc/catalog
+      - ./trino/etc/config.properties:/usr/lib/trino/etc/config.properties
+      - ./trino/etc/jvm.config:/usr/lib/trino/etc/jvm.config
+      - ./trino/etc/log.properties:/usr/lib/trino/etc/log.properties
+      - ./trino/etc/node.properties:/usr/lib/trino/etc/node.properties
+      - ./trino/install.properties:/usr/lib/trino/ranger-trino-plugin/install.properties
+    environment:
+      SERVICE_PRECONDITION: "postgres-db:5432"
+    ports:
+      - "8080:8080"
+
+
+volumes:
+  warehouse:
+
+networks:
+  default:
+    name: ranger-env
+    external: true

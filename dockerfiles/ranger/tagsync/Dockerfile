@@ -1,4 +1,4 @@
-FROM ranger-base:2.4.0
+FROM vijayjangir/ranger-base:2.4.0
 
 ENV RANGER_TAGSYNC_HOME /opt/ranger_tagsync
 

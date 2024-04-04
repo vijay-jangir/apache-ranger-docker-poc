@@ -8,8 +8,8 @@ services:
     container_name: atlas-server
     volumes:
       - ./mnt/data:/opt/atlas/data
-      - ./ranger/install.properties:/opt/atlas/ranger-atlas-plugin/install.properties
-      # - ./atlas/mnt:/mnt
+      # - ./ranger/install.properties:/opt/atlas/ranger-atlas-plugin/install.properties
+      - ./atlas-application.properties:/opt/atlas/conf/atlas-application.properties
     environment:
       MANAGE_LOCAL_HBASE: true
       MANAGE_LOCAL_SOLR: true
@@ -44,9 +44,7 @@ services:
     depends_on:
       - zookeeper  
   
-  
-
 networks:
   default:
-    external:
-      name: ranger-env
+    external: true
+    name: ranger-env
