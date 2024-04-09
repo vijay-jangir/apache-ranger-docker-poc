@@ -1,4 +1,4 @@
-FROM trinodb/trino:437
+FROM trinodb/trino:377
 
 ENV RANGER_VERSION 2.4.0
 
@@ -9,8 +9,8 @@ ENV RANGER_PLUGIN_HOME /usr/lib/trino/ranger-trino-plugin
 COPY ranger-${RANGER_VERSION}-trino-plugin.tar.gz /usr/lib/trino/ranger-${RANGER_VERSION}-trino-plugin.tar.gz
 
 WORKDIR /usr/lib/trino
-RUN microdnf install -y gzip \
-    && microdnf clean all \
+RUN yum install -y gzip procps-ng vim \
+    && yum clean all \
     && rm -rf /var/cache/yum
 
 RUN tar -xvf ranger-${RANGER_VERSION}-trino-plugin.tar.gz \
@@ -21,4 +21,4 @@ RUN tar -xvf ranger-${RANGER_VERSION}-trino-plugin.tar.gz \
 
 ADD run.sh /run.sh
 
-CMD ["/run.sh"]
+ENTRYPOINT ["/run.sh"]
